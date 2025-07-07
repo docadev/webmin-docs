@@ -1,0 +1,37 @@
+name: Sync Webmin Docs
+
+on:
+  schedule:
+    - cron:  '0 6 * * *'   # Roda todo dia às 6h UTC (5h da manhã no Brasil)
+  workflow_dispatch:        # Permite rodar manualmente
+
+jobs:
+  sync_docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout seu repo
+        uses: actions/checkout@v4
+
+      - name: Limpar docs antigos
+        run: rm -rf docs
+
+      - name: Baixar última versão dos docs do Webmin
+        run: |
+          git clone --depth=1 --filter=blob:none --sparse https://github.com/webmin/webmin.com.git webmin-temp
+          cd webmin-temp
+          git sparse-checkout set content/docs
+          cd ..
+          mv webmin-temp/content/docs ./docs
+          rm -rf webmin-temp
+
+      - name: Commit & push se houver mudanças
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git add docs
+          if ! git diff --cached --quiet; then
+            git commit -m "Update docs from Webmin"
+            git push
+          else
+            echo "Sem mudanças para commitar."
+          fi
