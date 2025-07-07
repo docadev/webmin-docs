@@ -2,7 +2,7 @@ name: Sync Webmin Docs
 
 on:
   schedule:
-    - cron:  '0 6 * * *'   # Roda todo dia às 6h UTC (5h da manhã no Brasil)
+    - cron:  '0 6 * * *'   # Roda todo dia às 6h UTC (3h da manhã no Brasil)
   workflow_dispatch:        # Permite rodar manualmente
 
 jobs:
